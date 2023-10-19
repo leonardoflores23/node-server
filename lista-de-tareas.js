@@ -5,57 +5,93 @@ const rl = readline.createInterface({
     output:process.stdout
 });
 
-const task = [];
-function addTask(task){
-    task.push({description: task, completed: false});
-    console.log('Tarea añadida');
-    showTask();
+function addTask(taskDescription) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      task.push({ description: taskDescription, completed: false });
+      console.log('Tarea añadida');
+      resolve();
+    }, 1000); 
+  });
 }
 
-function deletTask(index){
-    if(index >= 0 && index < task.length){
+function deleteTask(index) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (index >= 0 && index < task.length) {
         tasks.splice(index, 1);
-        console.log('Tare eliminada');
-        showTasks();
-    } else{
-        console.log('indcice no valido');
-    }
+        console.log('Tarea eliminada');
+        resolve();
+      } else {
+        reject('Índice no válido');
+      }
+    }, 1000); 
+  });
 }
-function completeTask(index){
-    if (index >= 0 && index < task.length){
+
+function completeTask(index) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (index >= 0 && index < task.length) {
         task[index].completed = true;
         console.log('Tarea completada');
-        showTask();       
-    } else{
-        console.log('indice no valido');
-    }
+        resolve();
+      } else {
+        reject('Índice no válido');
+      }
+    }, 1000); 
+  });
 }
 
-function showTask(){
-    console.log('Lista de tareas');
-    task.forEach((task, index)=>{
-        const status = task.completed? 'Completada':'Pendiente';
-        console.log('${index}: [${status}] ${task.description}');
-    });
-}
 
-function executeCommand(command) {
-    const [action, ...params] = command.split(' ');
-  
-    if (action === 'add') {
-      addTask(params.join(' '));
-    } else if (action === 'delete') {
-      deleteTask(parseInt(params[0], 10));
-    } else if (action === 'complete') {
-      completeTask(parseInt(params[0], 10));
-    } else if (action === 'list') {
-      showTasks();
-    } else if (action === 'exit') {
-      rl.close();
-    } else {
-      console.log('Comando no válido.');
+async function executeCommand(command) {
+  const [action, ...params] = command.split(' ');
+
+  if (action === 'add')
+  {
+    try 
+      {
+        await addTask(params.join(' '));
+      } 
+      catch (error) 
+      {
+        console.error(error);
+      }
+  } 
+  else if (action === 'delete') 
+  {
+    try 
+    {
+      await deleteTask(parseInt(params[0], 10));
+    } catch (error) 
+    {
+      console.error(error);
     }
+  } 
+  else if (action === 'complete')
+  {
+    try
+    {
+      await completeTask(parseInt(params[0], 10));
+    } catch (error)
+    {
+      console.error(error);
+    }
+  } 
+  else if (action === 'list')
+  {
+    showTasks();
+  } 
+  else if (action === 'exit') 
+  {
+    rl.close();
   }
+  else 
+  {
+    console.log('Comando no válido.');
+  }
+}
+
   
   console.log('Gestión de tareas con Node.js');
   console.log('Comandos: add <tarea>, delete <índice>, complete <índice>, list, exit');
